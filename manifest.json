@@ -2,10 +2,14 @@
   "manifest_version": 2,
   "name": "Youtube focus",
   "version": "1.0.0",
+  "browser_action": {
+    "default_popup": "index.html"
+  },
   "content_scripts": [
     {
       "matches": ["https://www.youtube.com/*"],
       "js": ["main.js"]
     }
-  ]
+  ],
+  "permissions": ["activeTab"]
 }

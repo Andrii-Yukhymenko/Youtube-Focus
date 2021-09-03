@@ -39,7 +39,9 @@ observer.observe(target, {
 
 // Функция для удаления эллемента
 function deleteSection(item) {
-  item.remove();
+  if (item != null) {
+    item.remove();
+  }
 }
 
 function defineVideoPage() {
