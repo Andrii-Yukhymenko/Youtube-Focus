@@ -1,16 +1,6 @@
 // Т.к. youtube это spa, мы буем отслеживать изменения в DOM дереве
 
-chrome.runtime.onMessage.addListener(function getMessage(request, sender, sendResponse) {
-  if (request.message === "turn-on") {
-    let extantionIsOn = true;
-    console.log("turn-on");
-    return extantionIsOn;
-  } else if (request.message === "turn-off") {
-    let extantionIsOn = false;
-    console.log("turn-off");
-    return extantionIsOn;
-  }
-});
+chrome.runtime.onMessage.addListener(getMessage);
 
 // Элемент где будет проходить мутация
 let target = document.querySelector("body");
@@ -73,4 +63,14 @@ function defineResultsPage() {
 // todo отключить блок подписок, трендов
 // todo вместо удаления целого блока рекомендаций на главной странице можно поместить внутрь картинку с мотивацией.
 
-
+function getMessage(request, sender, sendResponse) {
+  if (request.message === "turn-on") {
+    let extantionIsOn = true;
+    console.log("turn-on");
+    return extantionIsOn;
+  } else if (request.message === "turn-off") {
+    let extantionIsOn = false;
+    console.log("turn-off");
+    return extantionIsOn;
+  }
+}
