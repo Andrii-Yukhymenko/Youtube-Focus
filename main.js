@@ -33,11 +33,6 @@ const mutationCallback = function (mutationsList, observer) {
 const observer = new MutationObserver(mutationCallback);
 
 // Начинаем наблюдение за настроенными изменениями целевого элемента
-observer.observe(target, {
-  attributes: true,
-  childList: true,
-  subtree: true,
-});
 
 // Функция для удаления эллемента
 function deleteSection(item) {
@@ -67,10 +62,20 @@ function getMessage(request, sender, sendResponse) {
   if (request.message === "turn-on") {
     let extantionIsOn = true;
     console.log("turn-on");
+    observer.observe(target, {
+      attributes: true,
+      childList: true,
+      subtree: true,
+    });
     return extantionIsOn;
   } else if (request.message === "turn-off") {
     let extantionIsOn = false;
     console.log("turn-off");
+    observer.observe(target, {
+      attributes: true,
+      childList: true,
+      subtree: true,
+    });
     return extantionIsOn;
   }
 }
