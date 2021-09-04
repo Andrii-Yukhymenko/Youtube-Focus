@@ -11,5 +11,8 @@
       "js": ["main.js"]
     }
   ],
-  "permissions": ["activeTab"]
+  "permissions": ["activeTab"],
+  "background": {
+    "scripts": ["background.js"]
+  }
 }
