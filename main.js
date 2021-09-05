@@ -1,23 +1,32 @@
 // Т.к. youtube это spa, мы буем отслеживать изменения в DOM дереве
 
+// Первоначальное получение элементов с рекомендациями, нужное для restoreSection
+let notificationIcon = document.querySelector(
+    ".notification-button-style-type-default"
+  ),
+  mainRecommendation = document.querySelector(
+    ".ytd-two-column-browse-results-renderer"
+  ),
+  watchRecommendation = document.querySelector("#secondary-inner");
+
+// Слежение за сообщениями
 chrome.runtime.onMessage.addListener(getMessage);
 
 // Элемент где будет проходить мутация
 let target = document.querySelector("body");
 
 // Колбэк-функция при срабатывании мутации
-const mutationCallback = function (mutationsList, observer) {
+const mutationCallback = function () {
   // Определение и удаление колокольчика
   let notificationIcon = document.querySelector(
-    ".notification-button-style-type-default"
-  );
-  deleteSection(notificationIcon);
-
-  // Определение блоков с рекомендациями
-  let mainRecommendation = document.querySelector(
+      ".notification-button-style-type-default"
+    ),
+    mainRecommendation = document.querySelector(
       ".ytd-two-column-browse-results-renderer"
     ),
     watchRecommendation = document.querySelector("#secondary-inner");
+
+  deleteSection(notificationIcon);
 
   //Определение ссылки и на какой странице мы находимся
   //todo если активировать плагин на странице подписок и перезагрузить страницу то если потом перейти на главную страницу блок с рекомендациями будет отображаться
@@ -34,26 +43,38 @@ const observer = new MutationObserver(mutationCallback);
 
 // Начинаем наблюдение за настроенными изменениями целевого элемента
 
+// Проверяем включено или выключено расширение при перезагрузке страницы или первом запуске
+checkStatus(localStorage.getItem("state"));
+
+//
+//
+//
+//
+//
+//
+// Функции =============================================================================================================
+
 // Функция для удаления элемента
 function deleteSection(item) {
   if (item != null) {
     item.style.display = "none";
   }
 }
+// Функция для восстановления элемента
 function restoreSection(item) {
   if (item != null) {
     item.style.display = "block";
   }
 }
 
-
+// Функция определения страницы с плеером
 function defineVideoPage() {
   let pageHref = window.location.href,
     regexVideo = new RegExp(/watch/),
     itsVideo = regexVideo.test(pageHref);
   return itsVideo;
 }
-
+// Функция определения страницы с результатами поиска
 function defineResultsPage() {
   let pageHref = window.location.href,
     regexResults = new RegExp(/results/),
@@ -64,22 +85,31 @@ function defineResultsPage() {
 // todo отключить блок подписок, трендов
 // todo вместо удаления целого блока рекомендаций на главной странице можно поместить внутрь картинку с мотивацией.
 
+// Функция получения сообщения и записи значения в localStorage
 function getMessage(request, sender, sendResponse) {
   if (request.message === "turn-on") {
     localStorage.setItem("state", "on");
-    let extantionIsOn = true;
     console.log("turn-on");
+    checkStatus(localStorage.getItem("state"));
+  } else if (request.message === "turn-off") {
+    localStorage.setItem("state", "off");
+    console.log("turn-off");
+    checkStatus(localStorage.getItem("state"));
+  }
+}
+
+// Функция которая включает и выключает слежение за мутациями (исполнительная логика)
+function checkStatus(status) {
+  if (status === "on") {
     observer.observe(target, {
       attributes: true,
       childList: true,
       subtree: true,
     });
-    return extantionIsOn;
-  } else if (request.message === "turn-off") {
-    localStorage.setItem("state", "off");
-    let extantionIsOn = false;
-    console.log("turn-off");
+  } else if (status === "off" || status === null) {
     observer.disconnect();
-    return extantionIsOn;
+    restoreSection(notificationIcon);
+    restoreSection(mainRecommendation);
+    restoreSection(watchRecommendation);
   }
 }
