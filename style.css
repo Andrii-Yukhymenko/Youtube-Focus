@@ -101,4 +101,8 @@ h6 {
   -webkit-box-shadow: 8px 8px 11px 0px rgba(34, 60, 80, 0.32);
   -moz-box-shadow: 8px 8px 11px 0px rgba(34, 60, 80, 0.32);
   box-shadow: 8px 8px 11px 0px rgba(34, 60, 80, 0.32);
+  background-color: #ff0000ff;
+}
+.button.active {
+  background-color: #8edc33;
 }

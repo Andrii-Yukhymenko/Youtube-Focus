@@ -8,6 +8,7 @@ let notificationIcon = document.querySelector(
     ".ytd-two-column-browse-results-renderer"
   ),
   watchRecommendation = document.querySelector("#secondary-inner");
+//todo сделать чтобы скрывался только id related внутри secondary-inner чтобы не удалялся список видео плейлиста
 
 // Слежение за сообщениями
 chrome.runtime.onMessage.addListener(getMessage);
