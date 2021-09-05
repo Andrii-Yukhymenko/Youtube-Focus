@@ -1,4 +1,15 @@
 let button = document.querySelector(".button");
+
+if (
+  localStorage.getItem("state") === "on" ||
+  localStorage.getItem("state") === null
+) {
+  button.classList.remove("active");
+  button.innerText = "Выключить";
+} else {
+  button.classList.add("active");
+  button.innerText = "Включить";
+}
 //todo обдумать когда какое значение state переключать
 button.addEventListener("click", () => {
   if (
