@@ -34,12 +34,18 @@ const observer = new MutationObserver(mutationCallback);
 
 // Начинаем наблюдение за настроенными изменениями целевого элемента
 
-// Функция для удаления эллемента
+// Функция для удаления элемента
 function deleteSection(item) {
   if (item != null) {
-    item.remove();
+    item.style.display = "none";
   }
 }
+function restoreSection(item) {
+  if (item != null) {
+    item.style.display = "block";
+  }
+}
+
 
 function defineVideoPage() {
   let pageHref = window.location.href,
@@ -60,6 +66,7 @@ function defineResultsPage() {
 
 function getMessage(request, sender, sendResponse) {
   if (request.message === "turn-on") {
+    localStorage.setItem("state", "on");
     let extantionIsOn = true;
     console.log("turn-on");
     observer.observe(target, {
@@ -69,13 +76,10 @@ function getMessage(request, sender, sendResponse) {
     });
     return extantionIsOn;
   } else if (request.message === "turn-off") {
+    localStorage.setItem("state", "off");
     let extantionIsOn = false;
     console.log("turn-off");
-    observer.observe(target, {
-      attributes: true,
-      childList: true,
-      subtree: true,
-    });
+    observer.disconnect();
     return extantionIsOn;
   }
 }
