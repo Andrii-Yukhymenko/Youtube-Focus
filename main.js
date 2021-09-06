@@ -10,9 +10,6 @@ let notificationIcon = document.querySelector(
   watchRecommendation = document.querySelector("#secondary-inner");
 //todo сделать чтобы скрывался только id related внутри secondary-inner чтобы не удалялся список видео плейлиста
 
-// Слежение за сообщениями
-chrome.runtime.onMessage.addListener(getMessage);
-
 // Элемент где будет проходить мутация
 let target = document.querySelector("body");
 
@@ -46,6 +43,8 @@ const observer = new MutationObserver(mutationCallback);
 
 // Проверяем включено или выключено расширение при перезагрузке страницы или первом запуске
 checkStatus(localStorage.getItem("state"));
+// Слежение за сообщениями
+chrome.runtime.onMessage.addListener(getMessage);
 
 //
 //
@@ -91,12 +90,11 @@ function getMessage(request, sender, sendResponse) {
   if (request.message === "turn-on") {
     localStorage.setItem("state", "on");
     console.log("turn-on");
-    checkStatus(localStorage.getItem("state"));
   } else if (request.message === "turn-off") {
     localStorage.setItem("state", "off");
     console.log("turn-off");
-    checkStatus(localStorage.getItem("state"));
   }
+  checkStatus(localStorage.getItem("state"));
 }
 
 // Функция которая включает и выключает слежение за мутациями (исполнительная логика)
@@ -114,3 +112,30 @@ function checkStatus(status) {
     restoreSection(watchRecommendation);
   }
 }
+
+////////////////////////////////
+
+const observer2 = new MutationObserver(() => {
+  if (
+    localStorage.getItem("state") === "off" ||
+    localStorage.getItem("state") === null
+  ) {
+    // Определение и удаление колокольчика
+    let notificationIcon = document.querySelector(
+        ".notification-button-style-type-default"
+      ),
+      mainRecommendation = document.querySelector(
+        ".ytd-two-column-browse-results-renderer"
+      ),
+      watchRecommendation = document.querySelector("#secondary-inner");
+
+    restoreSection(notificationIcon);
+    restoreSection(mainRecommendation);
+    restoreSection(watchRecommendation);
+  }
+});
+observer2.observe(target, {
+  attributes: true,
+  childList: true,
+  subtree: true,
+});
