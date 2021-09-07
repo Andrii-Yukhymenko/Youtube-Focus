@@ -1,7 +1,5 @@
 // Т.к. youtube это spa, мы буем отслеживать изменения в DOM дереве
 
-//todo сделать чтобы скрывался только id related внутри secondary-inner чтобы не удалялся список видео плейлиста
-
 // Элемент где будет проходить мутация
 let target = document.querySelector("body");
 
@@ -86,7 +84,7 @@ function hideRecommendation() {
     mainRecommendation = document.querySelector(
       ".ytd-two-column-browse-results-renderer"
     ),
-    watchRecommendation = document.querySelector("#secondary-inner");
+    watchRecommendation = document.querySelector("#secondary-inner > #related");
 
   //Определение ссылки и на какой странице мы находимся
   if (defineVideoPage()) {
@@ -106,7 +104,7 @@ function showRecommendation() {
     mainRecommendation = document.querySelector(
       ".ytd-two-column-browse-results-renderer"
     ),
-    watchRecommendation = document.querySelector("#secondary-inner");
+    watchRecommendation = document.querySelector("#secondary-inner > #related");
   restoreSection(notificationIcon);
   restoreSection(mainRecommendation);
   restoreSection(watchRecommendation);
