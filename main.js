@@ -1,50 +1,32 @@
 // Т.к. youtube это spa, мы буем отслеживать изменения в DOM дереве
 
-// Первоначальное получение элементов с рекомендациями, нужное для restoreSection
-let notificationIcon = document.querySelector(
-    ".notification-button-style-type-default"
-  ),
-  mainRecommendation = document.querySelector(
-    ".ytd-two-column-browse-results-renderer"
-  ),
-  watchRecommendation = document.querySelector("#secondary-inner");
 //todo сделать чтобы скрывался только id related внутри secondary-inner чтобы не удалялся список видео плейлиста
 
 // Элемент где будет проходить мутация
 let target = document.querySelector("body");
 
-// Колбэк-функция при срабатывании мутации
-const mutationCallback = function () {
-  // Определение и удаление колокольчика
-  let notificationIcon = document.querySelector(
-      ".notification-button-style-type-default"
-    ),
-    mainRecommendation = document.querySelector(
-      ".ytd-two-column-browse-results-renderer"
-    ),
-    watchRecommendation = document.querySelector("#secondary-inner");
-
-  deleteSection(notificationIcon);
-
-  //Определение ссылки и на какой странице мы находимся
-  //todo если активировать плагин на странице подписок и перезагрузить страницу то если потом перейти на главную страницу блок с рекомендациями будет отображаться
-  if (defineVideoPage()) {
-    deleteSection(watchRecommendation);
-  } else if (defineResultsPage()) {
-  } else {
-    deleteSection(mainRecommendation);
-  }
-};
-
-// Создаём экземпляр наблюдателя с указанной функцией колбэка
-const observer = new MutationObserver(mutationCallback);
-
-// Начинаем наблюдение за настроенными изменениями целевого элемента
-
-// Проверяем включено или выключено расширение при перезагрузке страницы или первом запуске
-checkStatus(localStorage.getItem("state"));
 // Слежение за сообщениями
 chrome.runtime.onMessage.addListener(getMessage);
+
+// Слежение за мутациями, при каждом изменении проверяем статус
+const observer = new MutationObserver(() => {
+  console.log(`Working... Hiding status: ${localStorage.getItem("state")}`);
+  if (localStorage.getItem("state") === "on") {
+    hideRecommendation();
+  } else if (
+    localStorage.getItem("state") === "off" ||
+    localStorage.getItem("state") === null
+  ) {
+    showRecommendation();
+  }
+});
+
+// Включаем слежение за мутациями
+observer.observe(target, {
+  attributes: true,
+  childList: true,
+  subtree: true,
+});
 
 //
 //
@@ -94,48 +76,38 @@ function getMessage(request, sender, sendResponse) {
     localStorage.setItem("state", "off");
     console.log("turn-off");
   }
-  checkStatus(localStorage.getItem("state"));
 }
 
-// Функция которая включает и выключает слежение за мутациями (исполнительная логика)
-function checkStatus(status) {
-  if (status === "on") {
-    observer.observe(target, {
-      attributes: true,
-      childList: true,
-      subtree: true,
-    });
-  } else if (status === "off" || status === null) {
-    observer.disconnect();
-    restoreSection(notificationIcon);
-    restoreSection(mainRecommendation);
-    restoreSection(watchRecommendation);
+// Функция колбек, срабатывает когда state = on
+function hideRecommendation() {
+  let notificationIcon = document.querySelector(
+      ".notification-button-style-type-default"
+    ),
+    mainRecommendation = document.querySelector(
+      ".ytd-two-column-browse-results-renderer"
+    ),
+    watchRecommendation = document.querySelector("#secondary-inner");
+
+  //Определение ссылки и на какой странице мы находимся
+  if (defineVideoPage()) {
+    deleteSection(watchRecommendation);
+  } else if (defineResultsPage()) {
+  } else {
+    deleteSection(mainRecommendation);
   }
+  deleteSection(notificationIcon);
 }
 
-////////////////////////////////
-
-const observer2 = new MutationObserver(() => {
-  if (
-    localStorage.getItem("state") === "off" ||
-    localStorage.getItem("state") === null
-  ) {
-    // Определение и удаление колокольчика
-    let notificationIcon = document.querySelector(
-        ".notification-button-style-type-default"
-      ),
-      mainRecommendation = document.querySelector(
-        ".ytd-two-column-browse-results-renderer"
-      ),
-      watchRecommendation = document.querySelector("#secondary-inner");
-
-    restoreSection(notificationIcon);
-    restoreSection(mainRecommendation);
-    restoreSection(watchRecommendation);
-  }
-});
-observer2.observe(target, {
-  attributes: true,
-  childList: true,
-  subtree: true,
-});
+// Функция колбек, срабатывает когда state = off или null
+function showRecommendation() {
+  let notificationIcon = document.querySelector(
+      ".notification-button-style-type-default"
+    ),
+    mainRecommendation = document.querySelector(
+      ".ytd-two-column-browse-results-renderer"
+    ),
+    watchRecommendation = document.querySelector("#secondary-inner");
+  restoreSection(notificationIcon);
+  restoreSection(mainRecommendation);
+  restoreSection(watchRecommendation);
+}
