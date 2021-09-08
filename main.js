@@ -70,9 +70,11 @@ function getMessage(request, sender, sendResponse) {
   if (request.message === "turn-on") {
     localStorage.setItem("state", "on");
     console.log("turn-on");
+    hideRecommendation();
   } else if (request.message === "turn-off") {
     localStorage.setItem("state", "off");
     console.log("turn-off");
+    showRecommendation();
   }
 }
 
